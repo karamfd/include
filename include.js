@@ -2,15 +2,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const includes = document.querySelectorAll("include");
 
   for (const include of includes) {
-    load_file(include.getAttribute("src"), (url) => {
+    loadFile(include.getAttribute("src"), (url) => {
       include.insertAdjacentHTML("afterend", url);
       include.remove();
     });
   }
 
-  function load_file(filename, callback) {
+  function loadFile(filename, callback) {
     fetch(filename)
-      .then((response) => response.text())
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+      })
       .then((url) => callback(url));
   }
 });
