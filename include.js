@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function loadFile(filename, callback) {
-    fetch(filename)
+  function loadFile(file, data) {
+    fetch(file)
       .then((response) => {
         if (response.ok) {
           return response.text();
@@ -17,6 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
           throw new Error(`HTTP error: ${response.status}`);
         }
       })
-      .then((url) => callback(url));
+      .then((html) => data(html));
   }
 });
