@@ -1,22 +1,22 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const includes = document.querySelectorAll("include");
+document.addEventListener("DOMContentLoaded", async () => {
+  const includes = [...document.querySelectorAll("include")];
 
   for (const include of includes) {
-    loadFile(include.getAttribute("src"), (url) => {
-      include.insertAdjacentHTML("afterend", url);
+    try {
+      const url = await loadFile(include.getAttribute("src"));
+      const fragment = document.createRange().createContextualFragment(url);
+      include.parentNode.insertBefore(fragment, include.nextSibling);
       include.remove();
-    });
+    } catch (error) {
+      console.error(`Error fetching or inserting content: ${error}`);
+    }
   }
 
-  function loadFile(file, data) {
-    fetch(file)
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-      })
-      .then((html) => data(html));
+  async function loadFile(file) {
+    const response = await fetch(file);
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+    return response.text();
   }
 });
